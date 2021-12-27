@@ -1,11 +1,20 @@
 package com.example.spring_data_1.controller;
 
+import com.example.spring_data_1.converter.ProductConverter;
+import com.example.spring_data_1.dto.ProductDto;
 import com.example.spring_data_1.entity.Product;
 import com.example.spring_data_1.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
+
+
+import static com.example.spring_data_1.converter.ProductConverter.productDtoToProduct;
+import static com.example.spring_data_1.converter.ProductConverter.productToProductDto;
 
 @RestController
 @RequestMapping("/rest")
@@ -17,22 +26,20 @@ public class ProductRestController {
     }
 
     @GetMapping("/products")
-    public List<Product> getAllProducts() {
-        return productService.getAll();
+    public List<ProductDto> getAllProducts() {
+        return productService.getAll().stream(ProductConverter::productToProductDto).map().collect(Collectors.toList());
     }
 
     @GetMapping("/products/{id}")
-    public Product findById(@PathVariable Long id) {
-        return productService.findById(id);
+    public ResponseEntity<ProductDto> getProductInfo(@PathVariable Long id) {
+        ProductDto productDto = productToProductDto(productService.findById(id));
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @PostMapping("/products")
-    public void saveProduct(@RequestBody Product product) {
+    @PostMapping("/add")
+    public ProductDto saveProduct(@RequestBody ProductDto productDto) {
+        Product product = productDtoToProduct(productDto);
         productService.save(product);
-    }
-
-    @GetMapping("/products/delete/{id}")
-    public void deleteProduct(Long id) {
-        productService.deleteById(id);
+        return productToProductDto(product);
     }
 }
