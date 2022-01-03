@@ -1,6 +1,7 @@
 package com.example.spring_data_1.entity;
 
 import lombok.Data;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -25,4 +26,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    public User(String name, String password, Set<SimpleGrantedAuthority> collect) {
+    }
 }
