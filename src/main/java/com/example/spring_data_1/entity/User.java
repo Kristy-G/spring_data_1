@@ -29,4 +29,8 @@ public class User {
 
     public User(String name, String password, Set<SimpleGrantedAuthority> collect) {
     }
+
+    public User() {
+
+    }
 }
